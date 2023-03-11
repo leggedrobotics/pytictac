@@ -108,12 +108,12 @@ print(to)
 ```
 Terminal Output:
 ```shell
-Test Object:
-  +-  method_a:                       0.17ms            counts: 3         std: 0.049        mean: 0.057       
-  +-  method_b:                       0.05ms            counts: 1         std: 0.0          mean: 0.05        
-  +------  method_b.1:                0.03ms            counts: 1         std: 0.0          mean: 0.026       
-  +-----------  method_b.1.a:         0.01ms            counts: 1         std: 0.0          mean: 0.006       
-  +-  method_c:                       0.01ms            counts: 1         std: 0.0          mean: 0.006       
-Small Object:
-  +-  method_a:                       0.02ms            counts: 3         std: 0.001        mean: 0.005
+Test Object                           total [ms]    count [n]        std [ms]       mean [ms]
+  +-  method_a:                       0.16          3                0.045          0.054           
+  +-  method_b:                       0.05          1                0.0            0.05            
+  +------  method_b.1:                0.03          1                0.0            0.027           
+  +-----------  method_b.1.a:         0.01          1                0.0            0.007           
+  +-  method_c:                       0.01          1                0.0            0.005           
+Small Object                          total [ms]    count [n]        std [ms]       mean [ms]
+  +-  method_a:                       0.02          3                0.001          0.005       
 ```

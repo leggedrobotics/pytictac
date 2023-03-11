@@ -96,7 +96,8 @@ class ClassTimer:
         s = ""
 
         for n, o in zip(self.names, self.objects):
-            s += n + ":\n"
+            s += n.ljust(38) + "total [ms]" + " " * 4 + "count [n]" + " " * 8 + "std [ms]" + " " * 7 + "mean [ms]\n"
+
             entries = []
             for info in o.ct_block_times:
                 spacing = int(info.n_level * 5)
@@ -106,10 +107,10 @@ class ClassTimer:
                     "  +"
                     + "-" * spacing
                     + f"-  {info.block_name}:".ljust(35 - spacing)
-                    + f"{round(info.time,2)}ms".ljust(18)
-                    + f"counts: {info.n} ".ljust(18)
-                    + f"std: {std} ".ljust(18)
-                    + f"mean: {round(mean,3)} ".ljust(18)
+                    + f"{round(info.time,2)}".ljust(14)
+                    + f"{info.n} ".ljust(16)
+                    + f" {std}".ljust(16)
+                    + f"{round(mean,3)}".ljust(16)
                 )
 
             # Sort the entries according to there level and the parent_method_name.
@@ -125,6 +126,7 @@ class ClassTimer:
                             entries_level_n = entries_level_n[:j] + [(e, info.block_name)] + entries_level_n[j:]
 
                 entries_level_n = [e for e, _ in entries_level_n]
+
                 s += "\n".join(entries_level_n)
             s += "\n"
 
