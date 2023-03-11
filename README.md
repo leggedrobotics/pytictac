@@ -117,3 +117,9 @@ Test Object                           total [ms]    count [n]        std [ms]   
 Small Object                          total [ms]    count [n]        std [ms]       mean [ms]
   +-  method_a:                       0.02          3                0.001          0.005       
 ```
+
+# Releasing
+```
+python3 setup.py bdist_wheel 
+twine upload dist/* 
+```
