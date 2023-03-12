@@ -34,7 +34,7 @@ print(start.elapsed_time(end))
 
 New:
 ```python
-from pytictac import Timer
+from pytictac import Timer, CpuTimer
 
 def func(x):
     return x*2
@@ -42,12 +42,17 @@ def func(x):
 # Compute
 with Timer("func2"):
     func(2)
+
+with CpuTimer("func2"):
+    func(2)
 ```
 Terminal Output:
 ```shell
 Time func2:  0.0655359998345375 ms
 ```
 
+There exists always a cpu version (using import time; st = time.time()) and a gpu-version (using torch events). 
+This is handy when you want to time for example a dataloader where you cannot use torch events.
 
 # Advanced Usage
 
@@ -82,15 +87,15 @@ class TestObject:
         with ClassContextTimer(parent_obj=self, block_name="method_b.1", parent_method_name="method_b"):
             self.x = 3
             with ClassContextTimer(
-                parent_obj=self, block_name="method_b.1.a", parent_method_name="method_b.1", n_level=2
+                parent_obj=self, block_name="method_b.1.a", parent_method_name="method_b.1", n_level=2, cpu=True
             ):
                 self.x = 4
 
-    @accumulate_time
+    @cpu_accumulate_time
     def method_c(self):
         self.x -= 2
 
-    @accumulate_time
+    @cpu_accumulate_time
     def method_d(self):
         self.x = 0
 

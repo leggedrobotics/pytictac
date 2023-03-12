@@ -1,8 +1,5 @@
 import torch
 import time
-import copy
-import pickle
-import os
 from functools import wraps
 
 
@@ -27,7 +24,7 @@ class BlockTimeInfo:
 
 
 class ClassContextTimer:
-    def __init__(self, parent_obj, block_name="", parent_method_name=None, n_level=1) -> None:
+    def __init__(self, parent_obj, block_name="", parent_method_name=None, n_level=1, cpu=False) -> None:
         self.parent_obj = parent_obj
 
         if not hasattr(self.parent_obj, "ct_enabled"):
@@ -46,8 +43,10 @@ class ClassContextTimer:
             parent_obj.ct_block_times.append(block_time_info)
 
         self.block_time_info = block_time_info
-        self.start = torch.cuda.Event(enable_timing=True)
-        self.end = torch.cuda.Event(enable_timing=True)
+        if not cpu:
+            self.start = torch.cuda.Event(enable_timing=True)
+            self.end = torch.cuda.Event(enable_timing=True)
+        self.cpu = cpu
 
     def __enter__(self):
         if not self.parent_obj.ct_enabled:
@@ -63,9 +62,15 @@ class ClassContextTimer:
         self.block_time_info.update(st)
 
     def tic(self):
-        self.start.record()
+        if self.cpu:
+            self.start = time.time()
+        else:
+            self.start.record()
 
     def toc(self):
+        if self.cpu:
+            return time.time() - self.start
+
         self.end.record()
         torch.cuda.synchronize()
         return self.start.elapsed_time(self.end)
@@ -151,6 +156,34 @@ def accumulate_time(method):
         end.record()
         torch.cuda.synchronize()
         st = start.elapsed_time(end)
+
+        block_time_info = None
+        for info in args[0].ct_block_times:
+            # This may be inefficient for large number of methods
+            if info.block_name == method.__name__:
+                block_time_info = info
+                break
+        if block_time_info is None:
+            block_time_info = BlockTimeInfo(method.__name__)
+            args[0].ct_block_times.append(block_time_info)
+
+        block_time_info.update(st)
+        return result
+
+    return timed
+
+
+def cpu_accumulate_time(method):
+    @wraps(method)
+    def timed(*args, **kw):
+        if not hasattr(args[0], "ct_enabled"):
+            return method(*args, **kw)
+        elif not args[0].ct_enabled:
+            return method(*args, **kw)
+
+        st = time.time()
+        result = method(*args, **kw)
+        st = time.time() - st
 
         block_time_info = None
         for info in args[0].ct_block_times:
