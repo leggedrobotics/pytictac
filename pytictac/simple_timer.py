@@ -16,7 +16,7 @@ class CpuTimer:
         self.start = time.perf_counter()
 
     def toc(self):
-        self.end_time = time.perf_counter()
+        self.end = time.perf_counter()
         return self.end - self.start
 
 
