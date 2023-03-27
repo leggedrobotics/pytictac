@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="pytictac",
-    version="1.0.5",
+    version="1.0.7",
     author="Jonas Frey",
     author_email="jonfrey@ethz.ch",
     packages=find_packages(),

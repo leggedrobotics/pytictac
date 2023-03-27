@@ -69,7 +69,7 @@ class ClassContextTimer:
 
     def toc(self):
         if self.cpu:
-            return time.time() - self.start
+            return (time.time() - self.start)*1000
 
         self.end.record()
         torch.cuda.synchronize()
@@ -183,7 +183,8 @@ def cpu_accumulate_time(method):
 
         st = time.time()
         result = method(*args, **kw)
-        st = time.time() - st
+        # Convert to ms
+        st = (time.time() - st) * 1000
 
         block_time_info = None
         for info in args[0].ct_block_times:
